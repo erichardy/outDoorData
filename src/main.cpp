@@ -1,6 +1,8 @@
 #include <Arduino.h>
 
 #include <OneWire.h>
+
+// cf https://github.com/milesburton/Arduino-Temperature-Control-Library
 #include <DallasTemperature.h>
 
 #include <Wire.h>
@@ -25,9 +27,11 @@ float jj = 6.3;
 
 // related to DS18B20
 #define DS18B20_PIN 4
+
 #define TEMPERATURE_PRECISION 12
 OneWire ds(DS18B20_PIN);
 DallasTemperature sensors(&ds);
+
 DeviceAddress insideThermometer;
 
 /* Code de retour de la fonction getTemperature() */
@@ -44,8 +48,7 @@ int motionSensorCurrentState   = LOW;  // current state of pin
 int motionSensorPreviousState  = LOW;  // previous state of pin
 
 // function to print a device address
-void printAddress(DeviceAddress deviceAddress)
-{
+void printAddress(DeviceAddress deviceAddress) {
   for (uint8_t i = 0; i < 8; i++)
   {
     if (deviceAddress[i] < 16) Serial.print("0");
@@ -80,7 +83,7 @@ byte getTemperature(float *temperature, byte reset_search) {
   // data[] : Données lues depuis le scratchpad
   // addr[] : Adresse du module 1-Wire détecté
   
-  /* Reset le bus 1-Wire ci nécessaire (requis pour la lecture du premier capteur) */
+  /* Reset le bus 1-Wire si nécessaire (requis pour la lecture du premier capteur) */
   if (reset_search) {
     ds.reset_search();
   }
@@ -136,7 +139,7 @@ void setup() {
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
   display.display();
   delay(1000);
-  display.setRotation(2); // vertical flip
+  // display.setRotation(2); // vertical flip
   display.setTextSize(1.5);
   display.setTextSize(2);
 
@@ -145,9 +148,10 @@ void setup() {
   display.display();
   display.clearDisplay();
   // Motion Sensor
-  pinMode(MOTION_SENSOR_PIN, INPUT);
+  /* pinMode(MOTION_SENSOR_PIN, INPUT);
   sensors.begin();
   delay(500);
+  */
   // Temperature
   Serial.print("Parasite power is: ");
   if (sensors.isParasitePowerMode()) Serial.println("ON");
@@ -175,14 +179,15 @@ void loop() {
   display.clearDisplay();
   display.setCursor(0,0);
   tempC = getExternalTemp();
-  // display.println(tempC);
+  display.println(tempC);
   // display.print(jj);
   // display.print (" ");
   // display.println(motionSensorCurrentState);
   display.println(temperature);
-
+  Serial.print("t° : ");
+  Serial.println(temperature);
   display.display();
   // jj -= .32;
-  xl += 2;
-  delay(1000);
+  // xl += 2;
+  delay(500);
 }
