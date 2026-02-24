@@ -130,8 +130,8 @@ byte getTemperature(float *temperature, byte reset_search) {
 
 void setup() {
   Serial.begin(115200);
-  Serial.print("dans setup");
-  // put your setup code here, to run once:
+  Serial.println("Dans setup...");
+
   // display
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
   display.display();
@@ -144,11 +144,12 @@ void setup() {
   display.setCursor(0,0);
   display.display();
   display.clearDisplay();
-  //
+  // Motion Sensor
   pinMode(MOTION_SENSOR_PIN, INPUT);
   sensors.begin();
   delay(500);
-  Serial.print("Parasite power is: "); 
+  // Temperature
+  Serial.print("Parasite power is: ");
   if (sensors.isParasitePowerMode()) Serial.println("ON");
   else Serial.println("OFF");
   if (!sensors.getAddress(insideThermometer, 0)){
@@ -159,7 +160,6 @@ void setup() {
   Serial.println();
   sensors.setResolution(insideThermometer, TEMPERATURE_PRECISION);
   delay(500);
-  // END display
 }
 
 void loop() {
@@ -171,6 +171,7 @@ void loop() {
     // return;
   }
   // motionSensorCurrentState = digitalRead(MOTION_SENSOR_PIN);
+  
   display.clearDisplay();
   display.setCursor(0,0);
   tempC = getExternalTemp();
