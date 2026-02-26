@@ -33,6 +33,7 @@ OneWire ds(DS18B20_PIN);
 DallasTemperature sensors(&ds);
 
 DeviceAddress insideThermometer;
+float prevTemp = 0.0;
 
 /* Code de retour de la fonction getTemperature() */
 enum DS18B20_RCODES {
@@ -137,8 +138,9 @@ void setup() {
 
   // display
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
-  display.display();
   delay(1000);
+  display.display();
+  // delay(1000);
   // display.setRotation(2); // vertical flip
   display.setTextSize(1.5);
   display.setTextSize(2);
@@ -168,26 +170,40 @@ void setup() {
 
 void loop() {
   float temperature;
-   
+  int arrow;
+  prevTemp = temperature;
   /* Lit la température ambiante à ~1Hz */
   if (getTemperature(&temperature, true) != READ_OK) {
     Serial.println(F("Erreur de lecture du capteur"));
     // return;
   }
   // motionSensorCurrentState = digitalRead(MOTION_SENSOR_PIN);
+
+  arrow = 26;
+  if (prevTemp < temperature) {
+    arrow = 24;
+  } else if (prevTemp > temperature) {
+    arrow = 25;
+  }
   
   display.clearDisplay();
   display.setCursor(0,0);
-  tempC = getExternalTemp();
-  display.println(tempC);
+  // tempC = getExternalTemp();
+  // display.println(tempC);
   // display.print(jj);
   // display.print (" ");
   // display.println(motionSensorCurrentState);
-  display.println(temperature);
+  display.setTextSize(1.5);
+  display.print("(");
+  display.print(prevTemp);
+  display.println(")");
+  display.setTextSize(3);
+  
+  display.print(temperature);
+  display.print(" ");
+  display.println((char) arrow);
   Serial.print("t° : ");
   Serial.println(temperature);
   display.display();
-  // jj -= .32;
-  // xl += 2;
-  delay(500);
+  delay(60000);
 }
